@@ -1,4 +1,4 @@
-import pygame, sys, random
+import pygame, sys
 from pygame.locals import *
 from standardShapes import standardShapes
 
@@ -7,7 +7,7 @@ from standardShapes import standardShapes
 ##################
 
 #### FEATURES ####
-# 1) Add add key repeat
+# 1) Add key repeat
 # 2)
 ##################
 
