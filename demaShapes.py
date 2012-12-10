@@ -3,12 +3,11 @@ from pygame.locals import *
 from standardShapes import standardShapes
 
 #### GLITCHES ####
-# 1) edge collisions
+# 1)
 ##################
 
 #### FEATURES ####
-# 1) Add key repeat
-# 2) Keep color at the bottom
+# 1) Keep color at the bottom
 ##################
 
 PIECES = standardShapes
@@ -22,8 +21,11 @@ BOARDWIDTH = 10 * BLOCKSIZE
 BOARDHEIGHT = 20 * BLOCKSIZE
 MARG = int((WINDOWWIDTH / 2) - (BOARDWIDTH / 2))
 STARTPOS = (WINDOWWIDTH / 2, 0)
-DELAY = 1000  # .1 seconds
+
+# timing constants
+DROPDELAY = 1000  # 1 seconds
 DROPEVENT = USEREVENT + 1  # signals the time to drop a block
+REPEATFREQ = 500  # .5 seconds
 
 #            R    G    B
 GRAY = (100, 100, 100)
@@ -65,7 +67,10 @@ def main():
     completedBlocks = []
 
     # Start drop timer
-    pygame.time.set_timer(DROPEVENT, DELAY)
+    pygame.time.set_timer(DROPEVENT, DROPDELAY)
+
+    # Key repeat speed (delay to start repeat, interval between repeats)
+    pygame.key.set_repeat(5, 50)
 
     while True:  # main game loop
         for event in pygame.event.get():  # event handling loop
@@ -92,7 +97,7 @@ def main():
                     activeShape = tempShape
                 else:
                     activeShape = tempShape
-                pygame.time.set_timer(DROPEVENT, DELAY)
+                pygame.time.set_timer(DROPEVENT, DROPDELAY)
 
             # Allocate new block
             if activeShape == None:
