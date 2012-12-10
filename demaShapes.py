@@ -3,23 +3,32 @@ from pygame.locals import *
 from standardShapes import standardShapes
 
 #### GLITCHES ####
-# 1)
+# 1) Removing > 2 rows leaves blanks
 ##################
 
 #### FEATURES ####
-# 1)
+# 3) gameover when top is reached
+# 4) preview next piece
+# 5) reserve?
+# 6) speedup (levels), increase score?
 ##################
 
 PIECES = standardShapes
 
 WINDOWWIDTH = 640
 WINDOWHEIGHT = 480
-WINDOWRECT = pygame.Rect(0, 0, 640, 480)
 FPS = 30
 BLOCKSIZE = 20  # pixels
 BOARDWIDTH = 10 * BLOCKSIZE
 BOARDHEIGHT = 20 * BLOCKSIZE
-MARG = int((WINDOWWIDTH / 2) - (BOARDWIDTH / 2))
+SCOREWIDTH = 125
+SCOREHEIGHT = 100
+XMARG = int((WINDOWWIDTH / 2) - (BOARDWIDTH / 2))
+YMARG = int((WINDOWHEIGHT / 2) - (BOARDHEIGHT / 2))
+PLAYRECT = pygame.Rect(XMARG, YMARG, BOARDWIDTH, BOARDHEIGHT)
+SCORERECT = pygame.Rect(WINDOWWIDTH - (XMARG / 2) - (SCOREWIDTH / 2), YMARG,
+                         SCOREWIDTH, SCOREHEIGHT)
+LEVELRECT = SCORERECT.move(0, 100)
 STARTPOS = (WINDOWWIDTH / 2, 0)
 
 # timing constants
@@ -36,6 +45,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
+LIGHTYELLOW = (175, 175, 20)
 ORANGE = (255, 128, 0)
 PURPLE = (255, 0, 255)
 CYAN = (0, 255, 255)
@@ -49,8 +59,13 @@ EMPTY = '.'
 BLOCK = 'O'
 
 BGCOLOR = NAVYBLUE
-BLOCKCOLOR = WHITE
+PLAYRECTCOLOR = WHITE
+SCOREWRITINGCOLOR = LIGHTYELLOW
+SCORECOLOR = GRAY
+SCORING = {0: 0, 1: 100, 2: 200, 3: 400, 4: 800}
 
+# scores = (numLines, numPts)
+scores = [0, 0]
 
 def main():
     global DISPLAYSURF
@@ -61,7 +76,7 @@ def main():
     pygame.display.set_caption('DemaBlocks')
 
     DISPLAYSURF.fill(BGCOLOR)
-
+    BASICFONT = pygame.font.Font('freesansbold.ttf', 14)
     activeShape = makeShape(PIECES.getRandomShape())
 
     # completed box set
@@ -105,6 +120,8 @@ def main():
                     for block in activeShape['blocks']:
                         completedBlocks.append((block, activeShape['color']))
                     activeShape = tempShape
+                    # check for cleared lines
+                    completedBlocks = clearLines(completedBlocks)
                 else:
                     activeShape = tempShape
                 pygame.time.set_timer(DROPEVENT, DROPDELAY)
@@ -114,6 +131,9 @@ def main():
                 activeShape = makeShape(PIECES.getRandomShape())
 
         DISPLAYSURF.fill(BGCOLOR)
+        pygame.draw.rect(DISPLAYSURF, PLAYRECTCOLOR, PLAYRECT)
+        pygame.draw.rect(DISPLAYSURF, SCORECOLOR, SCORERECT)
+        displayScore(scores, BASICFONT)
         displayActiveBlock(activeShape)
         displayCompletedBlocks(completedBlocks)
         pygame.display.update()
@@ -125,6 +145,36 @@ def newBlock(POS):
     return rect
 
 
+def displayScore(scores, BASICFONT):
+    string = "\n SCORE:\n                  " + str(scores[1]) + "\n\n LINES:\n                  " + str(scores[0])
+
+    scoreSurfaceObj = renderTextBlock(string, BASICFONT, True, LIGHTYELLOW)
+    DISPLAYSURF.blit(scoreSurfaceObj, SCORERECT)
+
+
+
+def renderLines(lines, font, antialias, color, background=None):
+    fontHeight = font.get_height()
+
+    surfaces = [font.render(ln, antialias, color) for ln in lines]
+    # can't pass background to font.render, because it doesn't respect the alpha
+
+    maxwidth = max([s.get_width() for s in surfaces])
+    result = pygame.Surface((maxwidth, len(lines) * fontHeight), pygame.SRCALPHA)
+    if background == None:
+        result.fill((90, 90, 90, 0))
+    else:
+        result.fill(background)
+
+    for i in range(len(lines)):
+        result.blit(surfaces[i], (0, i * fontHeight))
+    return result
+
+
+def renderTextBlock(text, font, antialias, color, background=None):
+    "This is renderTextBlock"
+    brokenText = text.replace("\r\n", "\n").replace("\r", "\n")
+    return renderLines(brokenText.split("\n"), font, antialias, color, background)
 def tryRotate(activeShape, completedBlocks, isRightRotate=True):
     shapeType = activeShape['type']
     shapeTemplates = PIECES.getTemplate(shapeType)  # TEMPLATES[shapeType]
@@ -154,7 +204,7 @@ def tryRotate(activeShape, completedBlocks, isRightRotate=True):
 
     # this could probably be abstracted out to a collisions function
     for testBlock in testBlocks:
-        if not WINDOWRECT.contains(testBlock):
+        if not PLAYRECT.contains(testBlock):
             return activeShape
         else:
             for completedBlock in completedBlocks:
@@ -185,7 +235,7 @@ def moveBlock(keystroke, activeShape, completedBlocks):
         testPos = (testPos[0], testPos[1] + BLOCKSIZE)
 
     for testBlock in testBlocks:
-        if not WINDOWRECT.contains(testBlock):
+        if not PLAYRECT.contains(testBlock):
             return activeShape
         else:
             for completedBlock in completedBlocks:
@@ -206,7 +256,7 @@ def toBottom(activeShape, completedBlocks):
         for block in blocks:
             testBlocks.append(block.move(0, BLOCKSIZE))
         for testBlock in testBlocks:
-            if (not WINDOWRECT.contains(testBlock)):
+            if (not PLAYRECT.contains(testBlock)):
                     isCollision = True
             for completedBlock in completedBlocks:
                 if completedBlock[0].colliderect(testBlock):
@@ -235,7 +285,7 @@ def dropShape(activeShape, completedBlocks):
                 return None
 
     for testBlock in testBlocks:
-        if not WINDOWRECT.contains(testBlock):
+        if not PLAYRECT.contains(testBlock):
             return None
 
     activeShape['blocks'] = testBlocks
@@ -259,11 +309,11 @@ def displayCompletedBlocks(completedBlocks):
 def makeShape(shape):
     newShape = {'type': shape, 'configuration': 0,
                 'color': PIECES.getColor(shape),
-                'topLeft': (MARG + LEFTGAP, 0), 'blocks': None}
+                'topLeft': (XMARG + LEFTGAP, YMARG), 'blocks': None}
     blocks = []
-    y = 0
+    y = YMARG
     for row in PIECES.getTemplate(shape, 0):
-        x = MARG + LEFTGAP
+        x = XMARG + LEFTGAP
         for pos in row:
             if pos != EMPTY:
                 blocks.append(pygame.Rect(x, y, BLOCKSIZE, BLOCKSIZE))
@@ -271,6 +321,50 @@ def makeShape(shape):
         y += BLOCKSIZE
     newShape['blocks'] = blocks
     return newShape
+
+
+def clearLines(completedBlocks):
+    global scores
+    rowCounts = [0] * 20  # watch out here for aliasing
+    absTop = PLAYRECT.top
+    # count rows
+    for completedBlock in completedBlocks:
+        row = (completedBlock[0].top - absTop) / BLOCKSIZE
+        rowCounts[row] += 1
+
+    # determine full rows
+    fullRows = []
+    for i in range(len(rowCounts)):
+        if rowCounts[i] == 10:
+            fullRows.append(i)
+
+    # calculate score
+    scores[0] += len(fullRows)
+    scores[1] += SCORING[len(fullRows)]
+
+    fullRows.sort(reverse=True)
+    print 'fullrows: ' + str(fullRows)
+
+    # get list of remaining rows
+    remainingBlocks = []
+    for completedBlock in completedBlocks:
+        if (completedBlock[0].top - absTop) / BLOCKSIZE not in fullRows:
+            remainingBlocks.append(completedBlock)
+
+    completedBlocks = []
+    for remainingBlock in remainingBlocks:
+        for fullRow in fullRows:
+            if (remainingBlock[0].top - absTop) / BLOCKSIZE <= fullRow:
+                print 'here'
+                remainingBlock = (remainingBlock[0].move(0, BLOCKSIZE),
+                                  remainingBlock[1])
+        completedBlocks.append(remainingBlock)
+
+    print rowCounts
+    print 'Total Lines: ' + str(scores[0])
+    print 'Total Points: ' + str(scores[1])
+
+    return completedBlocks
 
 if __name__ == '__main__':
     main()
