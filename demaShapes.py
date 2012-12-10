@@ -8,7 +8,7 @@ from standardShapes import standardShapes
 
 #### FEATURES ####
 # 1) Add key repeat
-# 2)
+# 2) Keep color at the bottom
 ##################
 
 PIECES = standardShapes
@@ -50,7 +50,7 @@ BLOCKCOLOR = WHITE
 
 
 def main():
-    global FPSCLOCK, DISPLAYSURF
+    global DISPLAYSURF
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -85,6 +85,7 @@ def main():
                     activeShape = toBottom(activeShape, completedBlocks)
             elif event.type == DROPEVENT:
                 tempShape = dropShape(activeShape, completedBlocks)  # drops or sticks block (none)
+                print activeShape['topLeft']
                 if tempShape == None:
                     for block in activeShape['blocks']:
                         completedBlocks.append(block)
@@ -96,8 +97,6 @@ def main():
             # Allocate new block
             if activeShape == None:
                 activeShape = makeShape(PIECES.getRandomShape())
-
-            print activeShape['topLeft']
 
         DISPLAYSURF.fill(BGCOLOR)
         displayActiveBlock(activeShape)
@@ -133,9 +132,7 @@ def tryRotate(activeShape, completedBlocks, isRightRotate=True):
     for row in shapeTemplates[nextTemplate]:
         x = topLeft[0]
         for pos in row:
-            if pos == EMPTY:
-                x += 1
-            else:
+            if pos != EMPTY:
                 testBlocks.append(pygame.Rect(x, y, BLOCKSIZE, BLOCKSIZE))
             x += BLOCKSIZE
         y += BLOCKSIZE
@@ -203,8 +200,8 @@ def toBottom(activeShape, completedBlocks):
             blocks = testBlocks
             activeShape['topLeft'] = (pos[0], pos[1] + BLOCKSIZE)
             testBlocks = []
-            print "toBottom: " + str(activeShape['topLeft'])
             assert pos[1] < 10000, "Problem...."
+    print "toBottom: " + str(activeShape['topLeft'])
     activeShape['blocks'] = blocks
     return activeShape
 
@@ -253,9 +250,7 @@ def makeShape(shape):
     for row in PIECES.getTemplate(shape, 0):
         x = MARG + LEFTGAP
         for pos in row:
-            if pos == EMPTY:
-                x += 1
-            else:
+            if pos != EMPTY:
                 blocks.append(pygame.Rect(x, y, BLOCKSIZE, BLOCKSIZE))
             x += BLOCKSIZE
         y += BLOCKSIZE
@@ -264,4 +259,3 @@ def makeShape(shape):
 
 if __name__ == '__main__':
     main()
-
