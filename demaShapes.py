@@ -25,7 +25,8 @@ STARTPOS = (WINDOWWIDTH / 2, 0)
 # timing constants
 DROPDELAY = 1000  # 1 seconds
 DROPEVENT = USEREVENT + 1  # signals the time to drop a block
-REPEATFREQ = 500  # .5 seconds
+KEY_REPEAT_DELAY = 5
+KEY_REPEAT_INTERVAL = 50
 
 #            R    G    B
 GRAY = (100, 100, 100)
@@ -70,7 +71,7 @@ def main():
     pygame.time.set_timer(DROPEVENT, DROPDELAY)
 
     # Key repeat speed (delay to start repeat, interval between repeats)
-    pygame.key.set_repeat(5, 50)
+    pygame.key.set_repeat(KEY_REPEAT_DELAY, KEY_REPEAT_INTERVAL)
 
     while True:  # main game loop
         for event in pygame.event.get():  # event handling loop
@@ -93,7 +94,7 @@ def main():
                 print activeShape['topLeft']
                 if tempShape == None:
                     for block in activeShape['blocks']:
-                        completedBlocks.append(block)
+                        completedBlocks.append((block, activeShape['color']))
                     activeShape = tempShape
                 else:
                     activeShape = tempShape
@@ -150,7 +151,7 @@ def tryRotate(activeShape, completedBlocks, isRightRotate=True):
             for completedBlock in completedBlocks:
                 for testBlock in testBlocks:
                     # this might be colliding too soon, not allowing touching
-                    if completedBlock.colliderect(testBlock):
+                    if completedBlock[0].colliderect(testBlock):
                         return activeShape
     activeShape['blocks'] = testBlocks
     activeShape['configuration'] = nextTemplate
@@ -180,7 +181,7 @@ def moveBlock(keystroke, activeShape, completedBlocks):
         else:
             for completedBlock in completedBlocks:
                 for testBlock in testBlocks:
-                    if completedBlock.colliderect(testBlock):
+                    if completedBlock[0].colliderect(testBlock):
                         return activeShape
     activeShape['blocks'] = testBlocks
     activeShape['topLeft'] = testPos
@@ -196,10 +197,10 @@ def toBottom(activeShape, completedBlocks):
         for block in blocks:
             testBlocks.append(block.move(0, BLOCKSIZE))
         for testBlock in testBlocks:
-            if (not WINDOWRECT.contains(testBlock)):  # completedBlock.colliderect(testBlock):
+            if (not WINDOWRECT.contains(testBlock)):
                     isCollision = True
             for completedBlock in completedBlocks:
-                if completedBlock.colliderect(testBlock):
+                if completedBlock[0].colliderect(testBlock):
                     isCollision = True
         if isCollision == False:
             blocks = testBlocks
@@ -219,9 +220,9 @@ def dropShape(activeShape, completedBlocks):
     for block in blocks:
         testBlocks.append(block.move(0, BLOCKSIZE))
 
-    for block in completedBlocks:
+    for completedBlock in completedBlocks:
         for testBlock in testBlocks:
-            if testBlock.colliderect(block):
+            if testBlock.colliderect(completedBlock[0]):
                 return None
 
     for testBlock in testBlocks:
@@ -242,8 +243,8 @@ def displayActiveBlock(activeShape):
 
 
 def displayCompletedBlocks(completedBlocks):
-    for block in completedBlocks:
-        pygame.draw.rect(DISPLAYSURF, BLOCKCOLOR, block)
+    for completedBlock in completedBlocks:
+        pygame.draw.rect(DISPLAYSURF, completedBlock[1], completedBlock[0])
 
 
 def makeShape(shape):
