@@ -7,7 +7,7 @@ from standardShapes import standardShapes
 ##################
 
 #### FEATURES ####
-# 1) Keep color at the bottom
+# 1)
 ##################
 
 PIECES = standardShapes
@@ -70,7 +70,7 @@ def main():
     # Start drop timer
     pygame.time.set_timer(DROPEVENT, DROPDELAY)
 
-    # Key repeat speed (delay to start repeat, interval between repeats)
+    # Key repeat speed
     pygame.key.set_repeat(KEY_REPEAT_DELAY, KEY_REPEAT_INTERVAL)
 
     while True:  # main game loop
@@ -83,12 +83,21 @@ def main():
                 if event.key in (K_LEFT, K_RIGHT, K_DOWN):
                     activeShape = moveBlock(event.key, activeShape, completedBlocks)
                 elif event.key == K_UP:
+                    # Key repeat speed
+                    pygame.key.set_repeat(1000, 1000)
                     # rotate right
                     activeShape = tryRotate(activeShape, completedBlocks)
                 elif event.key == K_RSHIFT:
+                    # Key repeat speed
+                    pygame.key.set_repeat(1000, 1000)
                     activeShape = tryRotate(activeShape, completedBlocks, False)
                 elif event.key == K_SPACE:
+                    # Key repeat speed
+                    pygame.key.set_repeat(1000, 1000)
                     activeShape = toBottom(activeShape, completedBlocks)
+            elif event.type == KEYUP:
+                # Key repeat speed
+                pygame.key.set_repeat(5, 50)
             elif event.type == DROPEVENT:
                 tempShape = dropShape(activeShape, completedBlocks)  # drops or sticks block (none)
                 print activeShape['topLeft']
