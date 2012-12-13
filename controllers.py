@@ -2,7 +2,7 @@
 '''
 @author: Matthew Demarest
 @version: 1.1
-@summary: Events sent to mediator EventManager of demaShapes game.
+@summary: Controls from user, running ticks, and timer to signal events.
 '''
 
 import events  # from events.py
@@ -80,4 +80,8 @@ class RunController:
             # this stops the while loop from running
             self.keepGoing = False
 
-
+class TimeController:
+    '''Signals time based events.'''
+    def __init__(self, evManager):
+        self.evManager = evManager
+        self.evManager.RegisterListener(self)
