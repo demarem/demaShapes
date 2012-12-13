@@ -1,9 +1,10 @@
 import pygame, sys
 from pygame.locals import *
-from standardShapes import standardShapes
+# TESTING: from standardShapes import standardShapes
+from testingShapes import testingShapes
 
 #### GLITCHES ####
-# 1) Removing > 2 rows leaves blanks
+# 1) Removing > 2 rows leaves blanks (leaves some full rows)
 ##################
 
 #### FEATURES ####
@@ -13,11 +14,12 @@ from standardShapes import standardShapes
 # 6) speedup (levels), increase score?
 ##################
 
-PIECES = standardShapes
+# point of control for piece shapes
+PIECES = testingShapes
 
+# screen location constants
 WINDOWWIDTH = 640
 WINDOWHEIGHT = 480
-FPS = 30
 BLOCKSIZE = 20  # pixels
 BOARDWIDTH = 10 * BLOCKSIZE
 BOARDHEIGHT = 20 * BLOCKSIZE
@@ -28,10 +30,10 @@ YMARG = int((WINDOWHEIGHT / 2) - (BOARDHEIGHT / 2))
 PLAYRECT = pygame.Rect(XMARG, YMARG, BOARDWIDTH, BOARDHEIGHT)
 SCORERECT = pygame.Rect(WINDOWWIDTH - (XMARG / 2) - (SCOREWIDTH / 2), YMARG,
                          SCOREWIDTH, SCOREHEIGHT)
-LEVELRECT = SCORERECT.move(0, 100)
 STARTPOS = (WINDOWWIDTH / 2, 0)
 
 # timing constants
+FPS = 30
 DROPDELAY = 1000  # 1 seconds
 DROPEVENT = USEREVENT + 1  # signals the time to drop a block
 KEY_REPEAT_DELAY = 5
@@ -50,22 +52,24 @@ ORANGE = (255, 128, 0)
 PURPLE = (255, 0, 255)
 CYAN = (0, 255, 255)
 
-TEMPLATEWIDTH = 5
-TEMPLATEHEIGHT = 5
+# distance between side of play area and initial template position
 LEFTGAP = 3 * BLOCKSIZE
 RIGHTGAP = 2 * BLOCKSIZE
 
+# template values
 EMPTY = '.'
 BLOCK = 'O'
 
+# colors
 BGCOLOR = NAVYBLUE
 PLAYRECTCOLOR = WHITE
 SCOREWRITINGCOLOR = LIGHTYELLOW
 SCORECOLOR = GRAY
-SCORING = {0: 0, 1: 100, 2: 200, 3: 400, 4: 800}
 
+# scoring
+SCORING = {0: 0, 1: 100, 2: 200, 3: 400, 4: 800}
 # scores = (numLines, numPts)
-scores = [0, 0]
+scores = [0, 0]  # this shouldn't go here
 
 def main():
     global DISPLAYSURF
@@ -152,7 +156,6 @@ def displayScore(scores, BASICFONT):
     DISPLAYSURF.blit(scoreSurfaceObj, SCORERECT)
 
 
-
 def renderLines(lines, font, antialias, color, background=None):
     fontHeight = font.get_height()
 
@@ -160,7 +163,8 @@ def renderLines(lines, font, antialias, color, background=None):
     # can't pass background to font.render, because it doesn't respect the alpha
 
     maxwidth = max([s.get_width() for s in surfaces])
-    result = pygame.Surface((maxwidth, len(lines) * fontHeight), pygame.SRCALPHA)
+    result = pygame.Surface((maxwidth, len(lines) * fontHeight),
+                            pygame.SRCALPHA)
     if background == None:
         result.fill((90, 90, 90, 0))
     else:
@@ -175,9 +179,11 @@ def renderTextBlock(text, font, antialias, color, background=None):
     "This is renderTextBlock"
     brokenText = text.replace("\r\n", "\n").replace("\r", "\n")
     return renderLines(brokenText.split("\n"), font, antialias, color, background)
+
+
 def tryRotate(activeShape, completedBlocks, isRightRotate=True):
     shapeType = activeShape['type']
-    shapeTemplates = PIECES.getTemplate(shapeType)  # TEMPLATES[shapeType]
+    shapeTemplates = PIECES.getTemplate(shapeType)
     numTemplates = len(shapeTemplates)
 
     if isRightRotate:
@@ -309,9 +315,9 @@ def displayCompletedBlocks(completedBlocks):
 def makeShape(shape):
     newShape = {'type': shape, 'configuration': 0,
                 'color': PIECES.getColor(shape),
-                'topLeft': (XMARG + LEFTGAP, YMARG), 'blocks': None}
+                'topLeft': (XMARG + LEFTGAP, YMARG - BLOCKSIZE), 'blocks': None}
     blocks = []
-    y = YMARG
+    y = YMARG - BLOCKSIZE
     for row in PIECES.getTemplate(shape, 0):
         x = XMARG + LEFTGAP
         for pos in row:
@@ -355,7 +361,6 @@ def clearLines(completedBlocks):
     for remainingBlock in remainingBlocks:
         for fullRow in fullRows:
             if (remainingBlock[0].top - absTop) / BLOCKSIZE <= fullRow:
-                print 'here'
                 remainingBlock = (remainingBlock[0].move(0, BLOCKSIZE),
                                   remainingBlock[1])
         completedBlocks.append(remainingBlock)
