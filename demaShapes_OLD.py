@@ -1,6 +1,6 @@
 import pygame, sys
 from pygame.locals import *
-# TESTING: from standardShapes import standardShapes
+from standardShapes import standardShapes
 from testingShapes import testingShapes
 
 #### GLITCHES ####
@@ -15,7 +15,7 @@ from testingShapes import testingShapes
 ##################
 
 # point of control for piece shapes
-PIECES = testingShapes
+PIECES = standardShapes
 
 # screen location constants
 WINDOWWIDTH = 640
