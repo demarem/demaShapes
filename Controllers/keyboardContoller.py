@@ -43,6 +43,8 @@ class KeyboardController:
                         ev = events.ShapeStartMoveRequest(DIRECTION_DOWN)
                     elif event.key == K_SPACE:
                         ev = events.ShapeDropRequest()
+                    elif event.key == K_r:
+                        ev = events.ResetEvent()
                 elif event.type == KEYUP:
                     if event.key == K_LEFT:
                         ev = events.ShapeStopMoveRequest(DIRECTION_LEFT)

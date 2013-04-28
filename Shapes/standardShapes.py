@@ -7,6 +7,7 @@ class StandardShapes:
     EMPTY = '.'
     BLOCK = 'O'
     TEMPLATEWIDTH = 5
+    TEMPLATEHEIGHT = 5
 
     # block shapes
     I = 'I'

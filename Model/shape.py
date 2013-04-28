@@ -12,6 +12,7 @@ class Shape:
 
         self.shapeType = shapeType
         self.shapeTemplates = SHAPETYPES.getTemplate(shapeType)
+        self.color = SHAPETYPES.getColor(shapeType)
         self.shapeNumber = 0
 
         self.topLeft = None
@@ -57,7 +58,7 @@ class Shape:
                 if template[i][j] != SHAPETYPES.EMPTY:
                     if 0 <= i + self.topLeft[1] < HEIGHT and \
                             0 <= j + self.topLeft[0] < WIDTH:
-                        newBlock = block.Block(self.eventManager, self)
+                        newBlock = block.Block(self.eventManager, self.color)
                         newBlock.place(self.board.spaces[i + self.topLeft[1]][j + self.topLeft[0]])
                         self.blocks.append(newBlock)
                     else:
@@ -99,7 +100,7 @@ class Shape:
         for i in range(len(template)):
             for j in range(SHAPETYPES.TEMPLATEWIDTH):
                 if template[i][j] != SHAPETYPES.EMPTY:
-                    newBlock = block.Block(self.eventManager, self)
+                    newBlock = block.Block(self.eventManager, self.color)
                     newBlock.place(board.spaces[i - 1][index + j])
                     self.blocks.append(newBlock)
 
@@ -110,4 +111,8 @@ class Shape:
         return True
 
     def notify(self, event):
-        pass
+        if isinstance(event, events.ShapeAddedEvent):
+            if event.newShape == self:
+                self.board = event.toBoard
+                self.blocks = []
+                self.spawn(self.board)

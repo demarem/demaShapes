@@ -2,15 +2,13 @@ from constants import *
 
 class Block:
 
-    def __init__(self, eventManager, shape):
+    def __init__(self, eventManager, color):
         self.eventManager = eventManager
         self.eventManager.registerListener(self)
 
         self.space = None
         self.direction = None
-        self.shape = shape
-
-        self.color = None  # TODO
+        self.color = color
 
     def __str__(self):
         return '<Block %s>' % id(self)

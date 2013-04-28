@@ -3,6 +3,8 @@ import board
 import events
 import moveDetector
 import lineClearDetector
+import miniBoard
+from constants import *
 
 class Game:
 
@@ -18,12 +20,14 @@ class Game:
 
         self.players = [player.Player(eventManager)]
         self.board = board.Board(eventManager)
+        self.previewBoard = miniBoard.MiniBoard(eventManager, PREVIEW)
 
         self.moveDetector = None
         self.lineClearDetector = None
 
     def start(self):
         self.board.build()
+        self.previewBoard.build()
         self.state = Game.STATE_RUNNING
         self.moveDetector = moveDetector. \
             MoveDetector(self.players[0], self.board, self.eventManager)
@@ -39,6 +43,6 @@ class Game:
 
         elif isinstance(event, events.BoardChanged):
             pass
-            # self.board.printBoard(self.players[0].activeShape.blocks,
-            #                      self.players[0].inactiveBlocks)
+            self.board.printBoard(self.players[0].activeShape.blocks,
+                                  self.players[0].inactiveBlocks)
             # print self.players[0].activeShape.topLeft

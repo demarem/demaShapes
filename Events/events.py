@@ -12,75 +12,104 @@ class Event:
 
 class TickEvent(Event):
     def __init__(self):
+        Event.__init__(self)
         self.name = "CPU Tick Event"
 
 class QuitEvent(Event):
     def __init__(self):
+        Event.__init__(self)
         self.name = "Program Quit Event"
+
+class ResetEvent(Event):
+    def __init__(self):
+        Event.__init__(self)
+        self.name = "Reset Event"
 
 class WindowBuiltEvent(Event):
     def __init__(self, window):
+        Event.__init__(self)
         self.name = "Window Finished Building Event"
         self.window = window
 
 class BoardBuiltEvent(Event):
     def __init__(self, board):
+        Event.__init__(self)
         self.name = "Board Finished Building Event"
+        self.board = board
+
+class MiniBoardBuiltEvent(Event):
+    def __init__(self, board, boardName):
+        Event.__init__(self)
+        self.name = "Mini Board Finished Building Event"
+        self.boardName = boardName
         self.board = board
 
 class GameStartedEvent(Event):
     def __init__(self, game):
+        Event.__init__(self)
         self.name = "Game Started Event"
         self.game = game
 
 class ShapeStartMoveRequest(Event):
     def __init__(self, direction):
+        Event.__init__(self)
         self.name = "Shape Start Move Request"
         self.direction = direction
 
 class ShapeStopMoveRequest(Event):
     def __init__(self, direction):
+        Event.__init__(self)
         self.name = "Shape Stop Move Request"
         self.direction = direction
 
 class ShapeRotateRequest(Event):
     def __init__(self, direction):
+        Event.__init__(self)
         self.name = "Shape Rotate Request"
         self.direction = direction
 
 class ShapeDropRequest(Event):
     def __init__(self):
+        Event.__init__(self)
         self.name = "Shape Drop Request"
 
 class BoardChanged(Event):
     def __init__(self, activeBlocks, inactiveBlocks):
+        Event.__init__(self)
         self.name = "Board Changed Event"
         self.activeBlocks = activeBlocks
         self.inactiveBlocks = inactiveBlocks
 
 class ScoreUpdateEvent(Event):
     def __init__(self, score):
+        Event.__init__(self)
         self.name = "Score Update Event"
         self.score = score
 
 class ShapeFallEvent(Event):
     ''' Time induced block fall. '''
     def __init__(self):
+        Event.__init__(self)
         self.name = "Shape Fall Event"
 
 class ShapeAddedEvent(Event):
     ''' New shape at top of board '''
-    def __init__(self, shape):
-        self.shape = shape
+    def __init__(self, newShape, nextShape, toBoard):
+        Event.__init__(self)
+        self.newShape = newShape
+        self.nextShape = nextShape
+        self.toBoard = toBoard
         self.name = "Shape Added Event"
 
 class ShapePlacedEvent(Event):
     ''' Shape at bottom. '''
     def __init__(self, shape):
+        Event.__init__(self)
         self.name = "Shape Placed Event"
         self.shape = shape
 
 class ClearedBlocksEvent(Event):
     def __init__(self, rows):
+        Event.__init__(self)
         self.name = "Blocks Cleared Event"
         self.rows = rows

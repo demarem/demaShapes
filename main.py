@@ -2,7 +2,7 @@ import eventManager
 import keyboardContoller
 import timeController
 import runController
-import pygameView
+import mainView
 import game
 
 def main():
@@ -12,7 +12,7 @@ def main():
     runner = runController.RunController(eventMgr)
     timer = timeController.TimeController(eventMgr)
 
-    view = pygameView.PygameView(eventMgr)
+    view = mainView.MainView(eventMgr)
 
     currentGame = game.Game(eventMgr)
 

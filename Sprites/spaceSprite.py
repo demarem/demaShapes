@@ -10,6 +10,6 @@ class SpaceSprite(pygame.sprite.Sprite):
         self.image = pygame.Surface((BLOCKSIZE, BLOCKSIZE))
         # pylint: enable-msg=E1121
 
-        self.image.fill((0, 255, 128))
+        self.image.fill(BLACK)
 
         self.space = space
