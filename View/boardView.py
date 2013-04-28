@@ -16,11 +16,13 @@ class BoardView:
         self.frontSprites = pygame.sprite.RenderUpdates()
         self.boardRect = None
 
-    def showBoard(self, board):
+        self.board = None
+
+    def showBoard(self, reshow=False):
         squareRect = pygame.Rect(BOARDLEFT, BOARDTOP, BLOCKSIZE, BLOCKSIZE)
 
         column = 0
-        for row in board.spaces:
+        for row in self.board.spaces:
             for space in row:
                 if column < WIDTH:
                     squareRect = squareRect.move(BLOCKSIZE, 0)
@@ -35,7 +37,8 @@ class BoardView:
                 self.boardRect = newSprite.rect.union(self.boardRect)
                 newSprite = None
 
-        self.boardRect = self.boardRect.inflate(BOARDER, BOARDER)
+        if not reshow:
+            self.boardRect = self.boardRect.inflate(BOARDER, BOARDER)
         pygame.draw.rect(self.window, GREEN, self.boardRect)
 
     def showBlock(self, block, blockColor):
@@ -67,8 +70,8 @@ class BoardView:
 
     def notify(self, event):
         if isinstance(event, events.BoardBuiltEvent):
-            board = event.board
-            self.showBoard(board)
+            self.board = event.board
+            self.showBoard()
 
         elif isinstance(event, events.BoardChanged):
             self.frontSprites.empty()

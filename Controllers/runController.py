@@ -1,4 +1,6 @@
 import events
+import pygame
+from constants import *
 
 class RunController:
     '''...'''
@@ -9,7 +11,9 @@ class RunController:
         self.keepGoing = True
 
     def run(self):
+        FPSCLOCK = pygame.time.Clock()
         while self.keepGoing:
+            FPSCLOCK.tick(FPS)
             event = events.TickEvent()
             self.evManager.post(event)
 

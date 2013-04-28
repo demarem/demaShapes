@@ -7,20 +7,21 @@ class BlockSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, group)
 
         # pylint: disable-msg=E1121
-        pieceSurf = pygame.Surface((BLOCKSIZE, BLOCKSIZE))
+        self.pieceSurf = pygame.Surface((BLOCKSIZE, BLOCKSIZE))
         # pylint: enable-msg=E1121
 
         self.color = color
-        pieceSurf = pieceSurf.convert_alpha()
-        pieceSurf.fill ((0, 0, 0, 0))  # make transparent
+        self.pieceSurf = self.pieceSurf.convert_alpha()
+        self.pieceSurf.fill ((0, 0, 0, 0))  # make transparent
         self.rect = pygame.Rect(0, 0, BLOCKSIZE, BLOCKSIZE)
-        pygame.draw.rect(pieceSurf, color, self.rect)
-        self.image = pieceSurf
+        pygame.draw.rect(self.pieceSurf, color, self.rect)
+        self.image = self.pieceSurf
 
         self.block = block
         self.moveTo = None
 
     def update(self):
+
         if self.moveTo:
             self.rect.center = self.moveTo
             self.moveTo = None

@@ -1,5 +1,5 @@
 import eventManager
-import keyboardContoller
+import keyboardController
 import timeController
 import runController
 import mainView
@@ -8,7 +8,7 @@ import game
 def main():
     eventMgr = eventManager.EventManager()
 
-    keyboard = keyboardContoller.KeyboardController(eventMgr)
+    keyboard = keyboardController.KeyboardController(eventMgr)
     runner = runController.RunController(eventMgr)
     timer = timeController.TimeController(eventMgr)
 

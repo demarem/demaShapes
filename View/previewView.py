@@ -20,7 +20,6 @@ class PreviewView:
     def showPreviewPane(self, board):
         squareRect = pygame.Rect(PREVIEWLEFT, PREVIEWTOP, BLOCKSIZE, BLOCKSIZE)
 
-        print board.spaces
         column = 0
         for row in board.spaces:
             for space in row:

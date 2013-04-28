@@ -25,6 +25,11 @@ class ResetEvent(Event):
         Event.__init__(self)
         self.name = "Reset Event"
 
+class GameOverEvent(Event):
+    def __init__(self):
+        Event.__init__(self)
+        self.name = "Game Over Event"
+
 class WindowBuiltEvent(Event):
     def __init__(self, window):
         Event.__init__(self)
@@ -107,9 +112,3 @@ class ShapePlacedEvent(Event):
         Event.__init__(self)
         self.name = "Shape Placed Event"
         self.shape = shape
-
-class ClearedBlocksEvent(Event):
-    def __init__(self, rows):
-        Event.__init__(self)
-        self.name = "Blocks Cleared Event"
-        self.rows = rows
